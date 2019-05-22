@@ -21,8 +21,6 @@ if (typeof Snap != 'undefined') {
         'fill': '#fff'
       };
 
-  var LOADED_FONTS = {};
-
   /******************
    * SnapTheme
    ******************/
@@ -58,42 +56,10 @@ if (typeof Snap != 'undefined') {
             l[LINETYPE.DOTTED] = '6,2';
 
             var that = this;
-            this.waitForFont(function() {
-              resume(that);
-            });
+            resume(that);
           },
 
     // Wait for loading of the font
-    waitForFont: function(callback) {
-      var fontFamily = this.font_['font-family'];
-
-      if (typeof WebFont == 'undefined') {
-        throw new Error('WebFont is required (https://github.com/typekit/webfontloader).');
-      }
-
-      if (LOADED_FONTS[fontFamily]) {
-        // If already loaded, just return instantly.
-        callback();
-        return;
-      }
-
-      WebFont.load({
-          custom: {
-              families: [fontFamily] // TODO replace this with something that reads the css
-            },
-          classes: false, // No need to place classes on the DOM, just use JS Events
-          active: function() {
-              LOADED_FONTS[fontFamily] = true;
-              callback();
-            },
-          inactive: function() {
-              // If we fail to fetch the font, still continue.
-              LOADED_FONTS[fontFamily] = true;
-              callback();
-            }
-        });
-    },
-
     addDescription: function(svg, description) {
           var desc = document.createElementNS(xmlns, 'desc');
           desc.appendChild(document.createTextNode(description));
