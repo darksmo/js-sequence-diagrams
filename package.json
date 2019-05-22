@@ -1,5 +1,6 @@
 {
   "name": "js-sequence-diagrams",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/bramp/js-sequence-diagrams.git"
