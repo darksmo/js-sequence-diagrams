@@ -99,6 +99,7 @@ signaltype
 linetype
 	: LINE      { $$ = Diagram.LINETYPE.SOLID; }
 	| DOTLINE   { $$ = Diagram.LINETYPE.DOTTED; }
+	| DASHLINE  { $$ = Diagram.LINETYPE.DASHED; }
 	;
 
 arrowtype

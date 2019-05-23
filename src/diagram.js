@@ -95,7 +95,8 @@ Diagram.unescape = function(s) {
 
 Diagram.LINETYPE = {
   SOLID: 0,
-  DOTTED: 1
+  DOTTED: 1,
+  DASHED: 2
 };
 
 Diagram.ARROWTYPE = {

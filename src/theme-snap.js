@@ -56,9 +56,11 @@ if (typeof Snap != 'undefined') {
             a[ARROWTYPE.FILLED] = 'Block';
             a[ARROWTYPE.OPEN]   = 'Open';
 
-            var l = this.lineTypes_ = {};
+            this.lineTypes_ = {};
+            var l = this.lineTypes_;
             l[LINETYPE.SOLID]  = '';
             l[LINETYPE.DOTTED] = '6,2';
+            l[LINETYPE.DASHED] = '6,6';
 
             var that = this;
             resume(that);

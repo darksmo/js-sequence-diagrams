@@ -105,7 +105,8 @@ Diagram.unescape = function(s) {
 
 Diagram.LINETYPE = {
   SOLID: 0,
-  DOTTED: 1
+  DOTTED: 1,
+  DASHED: 2
 };
 
 Diagram.ARROWTYPE = {
@@ -219,7 +220,7 @@ var parser = function() {
     var o = function(k, v, o, l) {
         for (o = o || {}, l = k.length; l--; o[k[l]] = v) ;
         return o;
-    }, $V0 = [ 5, 8, 9, 13, 15, 24 ], $V1 = [ 1, 13 ], $V2 = [ 1, 17 ], $V3 = [ 24, 29, 30 ], parser = {
+    }, $V0 = [ 5, 8, 9, 13, 15, 24 ], $V1 = [ 1, 13 ], $V2 = [ 1, 17 ], $V3 = [ 24, 30, 31 ], parser = {
         trace: function() {},
         yy: {},
         symbols_: {
@@ -250,9 +251,10 @@ var parser = function() {
             arrowtype: 26,
             LINE: 27,
             DOTLINE: 28,
-            ARROW: 29,
-            OPENARROW: 30,
-            MESSAGE: 31,
+            DASHLINE: 29,
+            ARROW: 30,
+            OPENARROW: 31,
+            MESSAGE: 32,
             $accept: 0,
             $end: 1
         },
@@ -270,11 +272,12 @@ var parser = function() {
             24: "ACTOR",
             27: "LINE",
             28: "DOTLINE",
-            29: "ARROW",
-            30: "OPENARROW",
-            31: "MESSAGE"
+            29: "DASHLINE",
+            30: "ARROW",
+            31: "OPENARROW",
+            32: "MESSAGE"
         },
-        productions_: [ 0, [ 3, 2 ], [ 4, 0 ], [ 4, 2 ], [ 6, 1 ], [ 6, 1 ], [ 7, 2 ], [ 7, 1 ], [ 7, 1 ], [ 7, 2 ], [ 12, 4 ], [ 12, 4 ], [ 19, 1 ], [ 19, 3 ], [ 16, 1 ], [ 16, 1 ], [ 11, 4 ], [ 17, 1 ], [ 10, 1 ], [ 23, 2 ], [ 23, 1 ], [ 25, 1 ], [ 25, 1 ], [ 26, 1 ], [ 26, 1 ], [ 14, 1 ] ],
+        productions_: [ 0, [ 3, 2 ], [ 4, 0 ], [ 4, 2 ], [ 6, 1 ], [ 6, 1 ], [ 7, 2 ], [ 7, 1 ], [ 7, 1 ], [ 7, 2 ], [ 12, 4 ], [ 12, 4 ], [ 19, 1 ], [ 19, 3 ], [ 16, 1 ], [ 16, 1 ], [ 11, 4 ], [ 17, 1 ], [ 10, 1 ], [ 23, 2 ], [ 23, 1 ], [ 25, 1 ], [ 25, 1 ], [ 25, 1 ], [ 26, 1 ], [ 26, 1 ], [ 14, 1 ] ],
         performAction: function(yytext, yyleng, yylineno, yy, yystate, $$, _$) {
             /* this == yyval */
             var $0 = $$.length - 1;
@@ -348,14 +351,18 @@ var parser = function() {
                 break;
 
               case 23:
-                this.$ = Diagram.ARROWTYPE.FILLED;
+                this.$ = Diagram.LINETYPE.DASHED;
                 break;
 
               case 24:
-                this.$ = Diagram.ARROWTYPE.OPEN;
+                this.$ = Diagram.ARROWTYPE.FILLED;
                 break;
 
               case 25:
+                this.$ = Diagram.ARROWTYPE.OPEN;
+                break;
+
+              case 26:
                 this.$ = Diagram.unescape($$[$0].substring(1));
             }
         },
@@ -383,68 +390,69 @@ var parser = function() {
             24: [ 1, 15 ]
         }, o($V0, [ 2, 7 ]), o($V0, [ 2, 8 ]), {
             14: 16,
-            31: $V2
+            32: $V2
         }, {
             23: 18,
             25: 19,
             27: [ 1, 20 ],
-            28: [ 1, 21 ]
+            28: [ 1, 21 ],
+            29: [ 1, 22 ]
         }, {
-            16: 22,
-            18: [ 1, 23 ],
-            21: [ 1, 24 ],
-            22: [ 1, 25 ]
-        }, o([ 20, 27, 28, 31 ], [ 2, 17 ]), o($V0, [ 2, 6 ]), o($V0, [ 2, 18 ]), o($V0, [ 2, 9 ]), o($V0, [ 2, 25 ]), {
-            17: 26,
+            16: 23,
+            18: [ 1, 24 ],
+            21: [ 1, 25 ],
+            22: [ 1, 26 ]
+        }, o([ 20, 27, 28, 29, 32 ], [ 2, 17 ]), o($V0, [ 2, 6 ]), o($V0, [ 2, 18 ]), o($V0, [ 2, 9 ]), o($V0, [ 2, 26 ]), {
+            17: 27,
             24: $V1
         }, {
             24: [ 2, 20 ],
-            26: 27,
-            29: [ 1, 28 ],
-            30: [ 1, 29 ]
-        }, o($V3, [ 2, 21 ]), o($V3, [ 2, 22 ]), {
-            17: 30,
+            26: 28,
+            30: [ 1, 29 ],
+            31: [ 1, 30 ]
+        }, o($V3, [ 2, 21 ]), o($V3, [ 2, 22 ]), o($V3, [ 2, 23 ]), {
+            17: 31,
             24: $V1
         }, {
-            17: 32,
-            19: 31,
+            17: 33,
+            19: 32,
             24: $V1
         }, {
             24: [ 2, 14 ]
         }, {
             24: [ 2, 15 ]
         }, {
-            14: 33,
-            31: $V2
+            14: 34,
+            32: $V2
         }, {
             24: [ 2, 19 ]
         }, {
-            24: [ 2, 23 ]
-        }, {
             24: [ 2, 24 ]
         }, {
-            14: 34,
-            31: $V2
+            24: [ 2, 25 ]
         }, {
             14: 35,
-            31: $V2
+            32: $V2
         }, {
-            20: [ 1, 36 ],
-            31: [ 2, 12 ]
+            14: 36,
+            32: $V2
+        }, {
+            20: [ 1, 37 ],
+            32: [ 2, 12 ]
         }, o($V0, [ 2, 16 ]), o($V0, [ 2, 10 ]), o($V0, [ 2, 11 ]), {
-            17: 37,
+            17: 38,
             24: $V1
         }, {
-            31: [ 2, 13 ]
+            32: [ 2, 13 ]
         } ],
         defaultActions: {
             3: [ 2, 1 ],
-            24: [ 2, 14 ],
-            25: [ 2, 15 ],
-            27: [ 2, 19 ],
-            28: [ 2, 23 ],
+            25: [ 2, 14 ],
+            26: [ 2, 15 ],
+            28: [ 2, 19 ],
             29: [ 2, 24 ],
-            37: [ 2, 13 ]
+            30: [ 2, 25 ],
+            38: [ 2, 13 ]
         },
         parseError: function(str, hash) {
             if (!hash.recoverable) throw new Error(str);
@@ -711,7 +719,7 @@ var parser = function() {
                     return this.begin("title"), 13;
 
                   case 9:
-                    return this.popState(), 31;
+                    return this.popState(), 32;
 
                   case 10:
                     return 20;
@@ -727,13 +735,13 @@ var parser = function() {
                     return 27;
 
                   case 15:
-                    return 30;
+                    return 31;
 
                   case 16:
-                    return 29;
+                    return 30;
 
                   case 17:
-                    return 31;
+                    return 32;
 
                   case 18:
                     return 5;
@@ -830,7 +838,7 @@ var NOTE_PADDING  = 5; // Padding inside a note
 var NOTE_OVERLAP  = 15; // Overlap when using a "note over A,B"
 
 var TITLE_MARGIN   = 0;
-var TITLE_PADDING  = 5;
+var TITLE_PADDING  = 0;
 
 var SELF_SIGNAL_WIDTH = 20; // How far out a self signal goes
 
@@ -1133,7 +1141,7 @@ _.extend(BaseTheme.prototype, {
   drawTitle: function() {
     var title = this.title_;
     if (title) {
-      this.drawTextBox(title, title.message, TITLE_MARGIN, TITLE_PADDING, this.font_, ALIGN_LEFT);
+      this.drawTextBox(title, title.message, TITLE_MARGIN, TITLE_PADDING, this.font_, ALIGN_LEFT, true /*bNoBorder*/);
     }
   },
 
@@ -1251,14 +1259,18 @@ _.extend(BaseTheme.prototype, {
   /**
    * Draw text surrounded by a box
    */
-  drawTextBox: function(box, text, margin, padding, font, align) {
+  drawTextBox: function(box, text, margin, padding, font, align, bNoBorder) {
     var x = box.x + margin;
     var y = box.y + margin;
     var w = box.width  - 2 * margin;
     var h = box.height - 2 * margin;
 
     // Draw inner box
-    this.drawRect(x, y, w, h);
+    if (bNoBorder) {
+        this.drawTransparentRect(x, y, w, h);
+    } else {
+        this.drawRect(x, y, w, h);
+    }
 
     // Draw text (in the center)
     if (align == ALIGN_CENTER) {
@@ -1296,6 +1308,11 @@ if (typeof Snap != 'undefined') {
         'fill': '#fff'
       };
 
+  var TRANSPARENT_RECT = {
+        'stroke-width': 2,
+        'fill': '#fff'
+      };
+
   /******************
    * SnapTheme
    ******************/
@@ -1326,9 +1343,11 @@ if (typeof Snap != 'undefined') {
             a[ARROWTYPE.FILLED] = 'Block';
             a[ARROWTYPE.OPEN]   = 'Open';
 
-            var l = this.lineTypes_ = {};
+            this.lineTypes_ = {};
+            var l = this.lineTypes_;
             l[LINETYPE.SOLID]  = '';
             l[LINETYPE.DOTTED] = '6,2';
+            l[LINETYPE.DASHED] = '6,6';
 
             var that = this;
             resume(that);
@@ -1432,6 +1451,10 @@ if (typeof Snap != 'undefined') {
 
     drawRect: function(x, y, w, h) {
       var rect = this.paper_.rect(x, y, w, h).attr(RECT);
+      return this.pushToStack(rect);
+    },
+    drawTransparentRect: function(x, y, w, h) {
+      var rect = this.paper_.rect(x, y, w, h).attr(TRANSPARENT_RECT);
       return this.pushToStack(rect);
     },
 
