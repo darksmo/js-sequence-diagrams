@@ -1158,7 +1158,8 @@ _.extend(BaseTheme.prototype, {
       var aX = getCenterX(a);
       this.drawLine(
        aX, y + this.actorsHeight_ - ACTOR_MARGIN,
-       aX, y + this.actorsHeight_ + ACTOR_MARGIN + this.signalsHeight_);
+       aX, y + this.actorsHeight_ + ACTOR_MARGIN + this.signalsHeight_,
+      LINETYPE.DASHED);
     }, this));
   },
 
