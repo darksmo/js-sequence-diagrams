@@ -30,7 +30,7 @@ var NOTE_PADDING  = 5; // Padding inside a note
 var NOTE_OVERLAP  = 15; // Overlap when using a "note over A,B"
 
 var TITLE_MARGIN   = 0;
-var TITLE_PADDING  = 5;
+var TITLE_PADDING  = 0;
 
 var SELF_SIGNAL_WIDTH = 20; // How far out a self signal goes
 
@@ -333,7 +333,7 @@ _.extend(BaseTheme.prototype, {
   drawTitle: function() {
     var title = this.title_;
     if (title) {
-      this.drawTextBox(title, title.message, TITLE_MARGIN, TITLE_PADDING, this.font_, ALIGN_LEFT);
+      this.drawTextBox(title, title.message, TITLE_MARGIN, TITLE_PADDING, this.font_, ALIGN_LEFT, true /*bNoBorder*/);
     }
   },
 
@@ -451,14 +451,18 @@ _.extend(BaseTheme.prototype, {
   /**
    * Draw text surrounded by a box
    */
-  drawTextBox: function(box, text, margin, padding, font, align) {
+  drawTextBox: function(box, text, margin, padding, font, align, bNoBorder) {
     var x = box.x + margin;
     var y = box.y + margin;
     var w = box.width  - 2 * margin;
     var h = box.height - 2 * margin;
 
     // Draw inner box
-    this.drawRect(x, y, w, h);
+    if (bNoBorder) {
+        this.drawTransparentRect(x, y, w, h);
+    } else {
+        this.drawRect(x, y, w, h);
+    }
 
     // Draw text (in the center)
     if (align == ALIGN_CENTER) {

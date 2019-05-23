@@ -21,6 +21,11 @@ if (typeof Snap != 'undefined') {
         'fill': '#fff'
       };
 
+  var TRANSPARENT_RECT = {
+        'stroke-width': 2,
+        'fill': '#fff'
+      };
+
   /******************
    * SnapTheme
    ******************/
@@ -157,6 +162,10 @@ if (typeof Snap != 'undefined') {
 
     drawRect: function(x, y, w, h) {
       var rect = this.paper_.rect(x, y, w, h).attr(RECT);
+      return this.pushToStack(rect);
+    },
+    drawTransparentRect: function(x, y, w, h) {
+      var rect = this.paper_.rect(x, y, w, h).attr(TRANSPARENT_RECT);
       return this.pushToStack(rect);
     },
 
