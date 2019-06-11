@@ -23,6 +23,7 @@
 "right of"        return 'right_of';
 "over"            return 'over';
 "note"            return 'note';
+"activate"        return 'activate';
 "title"           { this.begin('title'); return 'title'; }
 <title>[^\r\n]+   { this.popState(); return 'MESSAGE'; }
 ","               return ',';
@@ -60,8 +61,13 @@ statement
 	: 'participant' actor_alias { $2; }
 	| signal               { yy.parser.yy.addSignal($1); }
 	| note_statement       { yy.parser.yy.addSignal($1); }
+	| activation_statement { yy.parser.yy.addSignal($1); }
 	| 'title' message      { yy.parser.yy.setTitle($2);  }
 	;
+
+activation_statement
+    : 'activate' actor { $$ = new Diagram.Activation($2); }
+    ;
 
 note_statement
 	: 'note' placement actor message   { $$ = new Diagram.Note($3, $2, $4); }

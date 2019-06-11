@@ -34,6 +34,29 @@ function assertSingleArrow(d, arrowtype, linetype, actorA, actorB, message) {
   equal(d.signals[0].linetype, linetype, 'Line type');
 }
 
+function assertSingleActivation(d, actors) {
+
+  equal(d.signals.length, 1, 'Correct activation count');
+
+  var activation = d.signals[0];
+  equal(activation.type, 'Activation', 'Correct signal type');
+
+  if (_.isArray(actors)) {
+    equal(_.isArray(d.actors), true, 'Correct actors array');
+    equal(d.actors.length, actors.length, 'Correct actors count');
+
+    equal(activation.actor.length, actors.length, 'Correct activation actors');
+    for (var i = 0; i < actors.length; i++) {
+      equal(d.actors[i].name, actors[i], 'Correct actor');
+      equal(activation.actor[i].name, actors[i], 'Correct activation actor');
+    }
+
+  } else {
+    equal(d.actors.length, 1, 'Correct actors count');
+    equal(activation.actor.name, actors, 'Correct activation actor');
+  }
+}
+
 function assertSingleNote(d, placement, actors, message) {
 
   message = message || 'Message';
@@ -154,6 +177,12 @@ test('Comments', function() {
   equal(Diagram.parse('Title: title # not a comment').title, 'title # not a comment');
   assertSingleNote(Diagram.parse('note left of A: Message # not a comment'), PLACEMENT.LEFTOF, 'A',
       'Message # not a comment');
+});
+
+test('Activation', function() {
+  assertSingleActivation(Diagram.parse('activate A'), 'A');
+  // TODO: multiple actors at the same time
+  // assertSingleActivation(Diagram.parse('activate A,B,C'), ['A', 'B', 'C']);
 });
 
 test('Notes', function() {

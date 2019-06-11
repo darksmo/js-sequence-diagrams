@@ -73,6 +73,11 @@ Diagram.Signal.prototype.isSelf = function() {
   return this.actorA.index == this.actorB.index;
 };
 
+Diagram.Activation = function(actor) {
+  this.type = 'Activation';
+  this.actor = actor;
+};
+
 Diagram.Note = function(actor, placement, message) {
   this.type      = 'Note';
   this.actor     = actor;
