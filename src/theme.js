@@ -25,6 +25,8 @@ var ACTOR_PADDING  = 10; // Padding inside a actor
 var SIGNAL_MARGIN  = 5; // Margin around a signal
 var SIGNAL_PADDING = 5; // Padding inside a signal
 
+var ACTIVATION_WIDTH = 10; // Width of activation line
+
 var NOTE_MARGIN   = 10; // Margin around a note
 var NOTE_PADDING  = 5; // Padding inside a note
 var NOTE_OVERLAP  = 15; // Overlap when using a "note over A,B"
@@ -235,11 +237,17 @@ _.extend(BaseTheme.prototype, {
       var a;
       var b;
 
-      var bb = this.textBBox(s.message, font);
+      if (s.message) {
+          var bb = this.textBBox(s.message, font);
 
-      s.textBB = bb;
-      s.width   = bb.width;
-      s.height  = bb.height;
+          s.textBB = bb;
+          s.width   = bb.width;
+          s.height  = bb.height;
+      } else {
+          s.textBB = null;
+          s.width = 0;
+          s.height = 0;
+      }
 
       var extraWidth = 0;
 
@@ -257,7 +265,13 @@ _.extend(BaseTheme.prototype, {
           a = Math.min(s.actorA.index, s.actorB.index);
           b = Math.max(s.actorA.index, s.actorB.index);
         }
-
+      } else if (s.type == 'Activation') {
+        s.actor.activeOffsets.push({
+            from: this.signalsHeight_ + this.actorsHeight_ - SIGNAL_MARGIN,
+            to: null
+        });
+        a = s.actor.index;
+        b = a + 1;
       } else if (s.type == 'Note') {
         s.width  += (NOTE_MARGIN + NOTE_PADDING) * 2;
         s.height += (NOTE_MARGIN + NOTE_PADDING) * 2;
@@ -302,16 +316,17 @@ _.extend(BaseTheme.prototype, {
       a.x = Math.max(actorsX, a.x);
 
       // TODO This only works if we loop in sequence, 0, 1, 2, etc
-      _each(a.distances, function(distance, b) {
+      a.distances.forEach(function(distance, iIdx) {
         // lodash (and possibly others) do not like sparse arrays
         // so sometimes they return undefined
         if (typeof distance == 'undefined') {
           return;
         }
 
-        b = actors[b];
-        distance = Math.max(distance, a.width / 2, b.width / 2);
-        b.x = Math.max(b.x, a.x + a.width / 2 + distance - b.width / 2);
+        var b = actors[iIdx];
+        var dist = Math.max(distance, a.width / 2, b.width / 2);
+
+        b.x = Math.max(b.x, a.x + a.width / 2 + dist - b.width / 2);
       });
 
       actorsX = a.x + a.width + a.paddingRight;
@@ -322,6 +337,17 @@ _.extend(BaseTheme.prototype, {
     // TODO Refactor a little
     diagram.width  += 2 * DIAGRAM_MARGIN;
     diagram.height += 2 * DIAGRAM_MARGIN + 2 * this.actorsHeight_ + this.signalsHeight_;
+
+    // close all activation offsets that are still open
+    actors.forEach(function(a) {
+        a.activeOffsets
+            .filter(function(oOffset) {
+                return oOffset.to === null;
+            })
+            .forEach(function(oOffset) {
+                oOffset.to = this.signalsHeight_ + this.actorsHeight_ - ACTOR_MARGIN + DIAGRAM_MARGIN;
+            }.bind(this));
+    }.bind(this));
 
     return this;
   },
@@ -352,6 +378,16 @@ _.extend(BaseTheme.prototype, {
        aX, y + this.actorsHeight_ - ACTOR_MARGIN,
        aX, y + this.actorsHeight_ + ACTOR_MARGIN + this.signalsHeight_,
       LINETYPE.DASHED);
+
+      // Activation
+      a.activeOffsets.forEach(function(oOffset) {
+          this.drawRect(
+            aX - ACTIVATION_WIDTH/2, /* x */
+            y + oOffset.from, /* y */
+            ACTIVATION_WIDTH, /* w */
+            oOffset.to - oOffset.from /* h */
+          );
+      }.bind(this));
     }.bind(this));
   },
 
@@ -405,6 +441,13 @@ _.extend(BaseTheme.prototype, {
   },
 
   drawSignal: function(signal, offsetY) {
+
+    function isActorActiveAt(y, actor) {
+        return actor.activeOffsets.some(function(oOffset) {
+            return oOffset.from <= y && oOffset.to >= y;
+        });
+    }
+
     var aX = getCenterX(signal.actorA);
     var bX = getCenterX(signal.actorB);
 
@@ -419,7 +462,17 @@ _.extend(BaseTheme.prototype, {
     // Padding above, between message and line
     // Margin below the line, between line and next signal
     y = offsetY + signal.height - SIGNAL_PADDING;
-    this.drawLine(aX, y, bX, y, signal.linetype, signal.arrowtype);
+
+    var signalOffsetXStart = 0;
+    var signalOffsetXEnd = 0;
+    if (isActorActiveAt.bind(this)(y, signal.actorA)) {
+        signalOffsetXStart = ACTIVATION_WIDTH/2;
+    }
+    if (isActorActiveAt.bind(this)(y, signal.actorB)) {
+        signalOffsetXEnd = ACTIVATION_WIDTH/2;
+    }
+
+    this.drawLine(aX + signalOffsetXStart, y, bX - signalOffsetXEnd, y, signal.linetype, signal.arrowtype);
   },
 
   drawNote: function(note, offsetY) {

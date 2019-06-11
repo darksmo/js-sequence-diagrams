@@ -58,6 +58,7 @@ Diagram.Actor = function(alias, name, index) {
   this.alias = alias;
   this.name  = name;
   this.index = index;
+  this.activeOffsets = [];
 };
 
 Diagram.Signal = function(actorA, signaltype, actorB, message) {
