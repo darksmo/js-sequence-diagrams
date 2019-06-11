@@ -19,6 +19,7 @@ function Diagram() {
   this.title   = undefined;
   this.actors  = [];
   this.signals = [];
+  this.hasFootbox = true;
 }
 /*
  * Return an existing actor with this alias, or creates a new one with alias and name.
@@ -59,6 +60,9 @@ Diagram.prototype.getActorWithAlias = function(input) {
 Diagram.prototype.setTitle = function(title) {
   this.title = title;
 };
+Diagram.prototype.setFootbox = function(hasFootbox) {
+  this.hasFootbox = false;
+};
 
 Diagram.prototype.addSignal = function(signal) {
   this.signals.push(signal);
@@ -68,6 +72,7 @@ Diagram.Actor = function(alias, name, index) {
   this.alias = alias;
   this.name  = name;
   this.index = index;
+  this.activeOffsets = [];
 };
 
 Diagram.Signal = function(actorA, signaltype, actorB, message) {
@@ -81,6 +86,16 @@ Diagram.Signal = function(actorA, signaltype, actorB, message) {
 
 Diagram.Signal.prototype.isSelf = function() {
   return this.actorA.index == this.actorB.index;
+};
+
+Diagram.Activation = function(actor) {
+  this.type = 'Activation';
+  this.actor = actor;
+};
+
+Diagram.Deactivation = function(actor) {
+  this.type = 'Deactivation';
+  this.actor = actor;
 };
 
 Diagram.Note = function(actor, placement, message) {
@@ -220,7 +235,7 @@ var parser = function() {
     var o = function(k, v, o, l) {
         for (o = o || {}, l = k.length; l--; o[k[l]] = v) ;
         return o;
-    }, $V0 = [ 5, 8, 9, 13, 15, 24 ], $V1 = [ 1, 13 ], $V2 = [ 1, 17 ], $V3 = [ 24, 30, 31 ], parser = {
+    }, $V0 = [ 5, 8, 9, 11, 15, 17, 19, 20, 28 ], $V1 = [ 1, 17 ], $V2 = [ 1, 21 ], $V3 = [ 28, 34, 35 ], parser = {
         trace: function() {},
         yy: {},
         symbols_: {
@@ -233,28 +248,32 @@ var parser = function() {
             NL: 8,
             participant: 9,
             actor_alias: 10,
-            signal: 11,
-            note_statement: 12,
-            title: 13,
-            message: 14,
-            note: 15,
-            placement: 16,
-            actor: 17,
-            over: 18,
-            actor_pair: 19,
-            ",": 20,
-            left_of: 21,
-            right_of: 22,
-            signaltype: 23,
-            ACTOR: 24,
-            linetype: 25,
-            arrowtype: 26,
-            LINE: 27,
-            DOTLINE: 28,
-            DASHLINE: 29,
-            ARROW: 30,
-            OPENARROW: 31,
-            MESSAGE: 32,
+            hide_footbox: 11,
+            signal: 12,
+            note_statement: 13,
+            activation_statement: 14,
+            title: 15,
+            message: 16,
+            deactivate: 17,
+            actor: 18,
+            activate: 19,
+            note: 20,
+            placement: 21,
+            over: 22,
+            actor_pair: 23,
+            ",": 24,
+            left_of: 25,
+            right_of: 26,
+            signaltype: 27,
+            ACTOR: 28,
+            linetype: 29,
+            arrowtype: 30,
+            LINE: 31,
+            DOTLINE: 32,
+            DASHLINE: 33,
+            ARROW: 34,
+            OPENARROW: 35,
+            MESSAGE: 36,
             $accept: 0,
             $end: 1
         },
@@ -263,21 +282,24 @@ var parser = function() {
             5: "EOF",
             8: "NL",
             9: "participant",
-            13: "title",
-            15: "note",
-            18: "over",
-            20: ",",
-            21: "left_of",
-            22: "right_of",
-            24: "ACTOR",
-            27: "LINE",
-            28: "DOTLINE",
-            29: "DASHLINE",
-            30: "ARROW",
-            31: "OPENARROW",
-            32: "MESSAGE"
+            11: "hide_footbox",
+            15: "title",
+            17: "deactivate",
+            19: "activate",
+            20: "note",
+            22: "over",
+            24: ",",
+            25: "left_of",
+            26: "right_of",
+            28: "ACTOR",
+            31: "LINE",
+            32: "DOTLINE",
+            33: "DASHLINE",
+            34: "ARROW",
+            35: "OPENARROW",
+            36: "MESSAGE"
         },
-        productions_: [ 0, [ 3, 2 ], [ 4, 0 ], [ 4, 2 ], [ 6, 1 ], [ 6, 1 ], [ 7, 2 ], [ 7, 1 ], [ 7, 1 ], [ 7, 2 ], [ 12, 4 ], [ 12, 4 ], [ 19, 1 ], [ 19, 3 ], [ 16, 1 ], [ 16, 1 ], [ 11, 4 ], [ 17, 1 ], [ 10, 1 ], [ 23, 2 ], [ 23, 1 ], [ 25, 1 ], [ 25, 1 ], [ 25, 1 ], [ 26, 1 ], [ 26, 1 ], [ 14, 1 ] ],
+        productions_: [ 0, [ 3, 2 ], [ 4, 0 ], [ 4, 2 ], [ 6, 1 ], [ 6, 1 ], [ 7, 2 ], [ 7, 1 ], [ 7, 1 ], [ 7, 1 ], [ 7, 1 ], [ 7, 2 ], [ 14, 2 ], [ 14, 2 ], [ 13, 4 ], [ 13, 4 ], [ 23, 1 ], [ 23, 3 ], [ 21, 1 ], [ 21, 1 ], [ 12, 4 ], [ 18, 1 ], [ 10, 1 ], [ 27, 2 ], [ 27, 1 ], [ 29, 1 ], [ 29, 1 ], [ 29, 1 ], [ 30, 1 ], [ 30, 1 ], [ 16, 1 ] ],
         performAction: function(yytext, yyleng, yylineno, yy, yystate, $$, _$) {
             /* this == yyval */
             var $0 = $$.length - 1;
@@ -293,76 +315,89 @@ var parser = function() {
                 break;
 
               case 7:
+                yy.parser.yy.setFootbox(!1);
+                break;
+
               case 8:
+              case 9:
+              case 10:
                 yy.parser.yy.addSignal($$[$0]);
                 break;
 
-              case 9:
+              case 11:
                 yy.parser.yy.setTitle($$[$0]);
                 break;
 
-              case 10:
-                this.$ = new Diagram.Note($$[$0 - 1], $$[$0 - 2], $$[$0]);
-                break;
-
-              case 11:
-                this.$ = new Diagram.Note($$[$0 - 1], Diagram.PLACEMENT.OVER, $$[$0]);
-                break;
-
               case 12:
-              case 20:
-                this.$ = $$[$0];
+                this.$ = new Diagram.Deactivation($$[$0]);
                 break;
 
               case 13:
-                this.$ = [ $$[$0 - 2], $$[$0] ];
+                this.$ = new Diagram.Activation($$[$0]);
                 break;
 
               case 14:
-                this.$ = Diagram.PLACEMENT.LEFTOF;
+                this.$ = new Diagram.Note($$[$0 - 1], $$[$0 - 2], $$[$0]);
                 break;
 
               case 15:
-                this.$ = Diagram.PLACEMENT.RIGHTOF;
+                this.$ = new Diagram.Note($$[$0 - 1], Diagram.PLACEMENT.OVER, $$[$0]);
                 break;
 
               case 16:
-                this.$ = new Diagram.Signal($$[$0 - 3], $$[$0 - 2], $$[$0 - 1], $$[$0]);
+              case 24:
+                this.$ = $$[$0];
                 break;
 
               case 17:
-                this.$ = yy.parser.yy.getActor(Diagram.unescape($$[$0]));
+                this.$ = [ $$[$0 - 2], $$[$0] ];
                 break;
 
               case 18:
-                this.$ = yy.parser.yy.getActorWithAlias(Diagram.unescape($$[$0]));
+                this.$ = Diagram.PLACEMENT.LEFTOF;
                 break;
 
               case 19:
-                this.$ = $$[$0 - 1] | $$[$0] << 2;
+                this.$ = Diagram.PLACEMENT.RIGHTOF;
+                break;
+
+              case 20:
+                this.$ = new Diagram.Signal($$[$0 - 3], $$[$0 - 2], $$[$0 - 1], $$[$0]);
                 break;
 
               case 21:
-                this.$ = Diagram.LINETYPE.SOLID;
+                this.$ = yy.parser.yy.getActor(Diagram.unescape($$[$0]));
                 break;
 
               case 22:
-                this.$ = Diagram.LINETYPE.DOTTED;
+                this.$ = yy.parser.yy.getActorWithAlias(Diagram.unescape($$[$0]));
                 break;
 
               case 23:
-                this.$ = Diagram.LINETYPE.DASHED;
-                break;
-
-              case 24:
-                this.$ = Diagram.ARROWTYPE.FILLED;
+                this.$ = $$[$0 - 1] | $$[$0] << 2;
                 break;
 
               case 25:
-                this.$ = Diagram.ARROWTYPE.OPEN;
+                this.$ = Diagram.LINETYPE.SOLID;
                 break;
 
               case 26:
+                this.$ = Diagram.LINETYPE.DOTTED;
+                break;
+
+              case 27:
+                this.$ = Diagram.LINETYPE.DASHED;
+                break;
+
+              case 28:
+                this.$ = Diagram.ARROWTYPE.FILLED;
+                break;
+
+              case 29:
+                this.$ = Diagram.ARROWTYPE.OPEN;
+                break;
+
+              case 30:
                 this.$ = Diagram.unescape($$[$0].substring(1));
             }
         },
@@ -377,82 +412,92 @@ var parser = function() {
             7: 5,
             8: [ 1, 6 ],
             9: [ 1, 7 ],
-            11: 8,
+            11: [ 1, 8 ],
             12: 9,
-            13: [ 1, 10 ],
+            13: 10,
+            14: 11,
             15: [ 1, 12 ],
-            17: 11,
-            24: $V1
+            17: [ 1, 15 ],
+            18: 13,
+            19: [ 1, 16 ],
+            20: [ 1, 14 ],
+            28: $V1
         }, {
             1: [ 2, 1 ]
         }, o($V0, [ 2, 3 ]), o($V0, [ 2, 4 ]), o($V0, [ 2, 5 ]), {
-            10: 14,
-            24: [ 1, 15 ]
-        }, o($V0, [ 2, 7 ]), o($V0, [ 2, 8 ]), {
-            14: 16,
-            32: $V2
+            10: 18,
+            28: [ 1, 19 ]
+        }, o($V0, [ 2, 7 ]), o($V0, [ 2, 8 ]), o($V0, [ 2, 9 ]), o($V0, [ 2, 10 ]), {
+            16: 20,
+            36: $V2
         }, {
-            23: 18,
-            25: 19,
-            27: [ 1, 20 ],
-            28: [ 1, 21 ],
-            29: [ 1, 22 ]
+            27: 22,
+            29: 23,
+            31: [ 1, 24 ],
+            32: [ 1, 25 ],
+            33: [ 1, 26 ]
         }, {
-            16: 23,
-            18: [ 1, 24 ],
-            21: [ 1, 25 ],
-            22: [ 1, 26 ]
-        }, o([ 20, 27, 28, 29, 32 ], [ 2, 17 ]), o($V0, [ 2, 6 ]), o($V0, [ 2, 18 ]), o($V0, [ 2, 9 ]), o($V0, [ 2, 26 ]), {
-            17: 27,
-            24: $V1
+            21: 27,
+            22: [ 1, 28 ],
+            25: [ 1, 29 ],
+            26: [ 1, 30 ]
         }, {
-            24: [ 2, 20 ],
-            26: 28,
-            30: [ 1, 29 ],
-            31: [ 1, 30 ]
-        }, o($V3, [ 2, 21 ]), o($V3, [ 2, 22 ]), o($V3, [ 2, 23 ]), {
-            17: 31,
-            24: $V1
+            18: 31,
+            28: $V1
         }, {
-            17: 33,
-            19: 32,
-            24: $V1
+            18: 32,
+            28: $V1
+        }, o([ 5, 8, 9, 11, 15, 17, 19, 20, 24, 28, 31, 32, 33, 36 ], [ 2, 21 ]), o($V0, [ 2, 6 ]), o($V0, [ 2, 22 ]), o($V0, [ 2, 11 ]), o($V0, [ 2, 30 ]), {
+            18: 33,
+            28: $V1
         }, {
-            24: [ 2, 14 ]
+            28: [ 2, 24 ],
+            30: 34,
+            34: [ 1, 35 ],
+            35: [ 1, 36 ]
+        }, o($V3, [ 2, 25 ]), o($V3, [ 2, 26 ]), o($V3, [ 2, 27 ]), {
+            18: 37,
+            28: $V1
         }, {
-            24: [ 2, 15 ]
+            18: 39,
+            23: 38,
+            28: $V1
         }, {
-            14: 34,
-            32: $V2
+            28: [ 2, 18 ]
         }, {
-            24: [ 2, 19 ]
+            28: [ 2, 19 ]
+        }, o($V0, [ 2, 12 ]), o($V0, [ 2, 13 ]), {
+            16: 40,
+            36: $V2
         }, {
-            24: [ 2, 24 ]
+            28: [ 2, 23 ]
         }, {
-            24: [ 2, 25 ]
+            28: [ 2, 28 ]
         }, {
-            14: 35,
-            32: $V2
+            28: [ 2, 29 ]
         }, {
-            14: 36,
-            32: $V2
+            16: 41,
+            36: $V2
         }, {
-            20: [ 1, 37 ],
-            32: [ 2, 12 ]
-        }, o($V0, [ 2, 16 ]), o($V0, [ 2, 10 ]), o($V0, [ 2, 11 ]), {
-            17: 38,
-            24: $V1
+            16: 42,
+            36: $V2
         }, {
-            32: [ 2, 13 ]
+            24: [ 1, 43 ],
+            36: [ 2, 16 ]
+        }, o($V0, [ 2, 20 ]), o($V0, [ 2, 14 ]), o($V0, [ 2, 15 ]), {
+            18: 44,
+            28: $V1
+        }, {
+            36: [ 2, 17 ]
         } ],
         defaultActions: {
             3: [ 2, 1 ],
-            25: [ 2, 14 ],
-            26: [ 2, 15 ],
-            28: [ 2, 19 ],
-            29: [ 2, 24 ],
-            30: [ 2, 25 ],
-            38: [ 2, 13 ]
+            29: [ 2, 18 ],
+            30: [ 2, 19 ],
+            34: [ 2, 23 ],
+            35: [ 2, 28 ],
+            36: [ 2, 29 ],
+            44: [ 2, 17 ]
         },
         parseError: function(str, hash) {
             if (!hash.recoverable) throw new Error(str);
@@ -704,60 +749,69 @@ var parser = function() {
                     return 9;
 
                   case 4:
-                    return 21;
+                    return 11;
 
                   case 5:
-                    return 22;
+                    return 25;
 
                   case 6:
-                    return 18;
+                    return 26;
 
                   case 7:
-                    return 15;
+                    return 22;
 
                   case 8:
-                    return this.begin("title"), 13;
-
-                  case 9:
-                    return this.popState(), 32;
-
-                  case 10:
                     return 20;
 
+                  case 9:
+                    return 19;
+
+                  case 10:
+                    return 17;
+
                   case 11:
+                    return this.begin("title"), 15;
+
                   case 12:
-                    return 24;
+                    return this.popState(), 36;
 
                   case 13:
-                    return 28;
+                    return 24;
 
                   case 14:
-                    return 27;
-
                   case 15:
-                    return 31;
+                    return 28;
 
                   case 16:
-                    return 30;
-
-                  case 17:
                     return 32;
 
+                  case 17:
+                    return 31;
+
                   case 18:
-                    return 5;
+                    return 35;
 
                   case 19:
+                    return 34;
+
+                  case 20:
+                    return 36;
+
+                  case 21:
+                    return 5;
+
+                  case 22:
                     return "INVALID";
                 }
             },
-            rules: [ /^(?:[\r\n]+)/i, /^(?:\s+)/i, /^(?:#[^\r\n]*)/i, /^(?:participant\b)/i, /^(?:left of\b)/i, /^(?:right of\b)/i, /^(?:over\b)/i, /^(?:note\b)/i, /^(?:title\b)/i, /^(?:[^\r\n]+)/i, /^(?:,)/i, /^(?:[^\->:,\r\n"]+)/i, /^(?:"[^"]+")/i, /^(?:--)/i, /^(?:-)/i, /^(?:>>)/i, /^(?:>)/i, /^(?:[^\r\n]+)/i, /^(?:$)/i, /^(?:.)/i ],
+            rules: [ /^(?:[\r\n]+)/i, /^(?:\s+)/i, /^(?:#[^\r\n]*)/i, /^(?:participant\b)/i, /^(?:hide footbox\b)/i, /^(?:left of\b)/i, /^(?:right of\b)/i, /^(?:over\b)/i, /^(?:note\b)/i, /^(?:activate\b)/i, /^(?:deactivate\b)/i, /^(?:title\b)/i, /^(?:[^\r\n]+)/i, /^(?:,)/i, /^(?:[^\->:,\r\n"]+)/i, /^(?:"[^"]+")/i, /^(?:--)/i, /^(?:-)/i, /^(?:>>)/i, /^(?:>)/i, /^(?:[^\r\n]+)/i, /^(?:$)/i, /^(?:.)/i ],
             conditions: {
                 title: {
-                    rules: [ 9 ],
+                    rules: [ 12 ],
                     inclusive: !1
                 },
                 INITIAL: {
-                    rules: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ],
+                    rules: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22 ],
                     inclusive: !0
                 }
             }
@@ -833,6 +887,8 @@ var ACTOR_PADDING  = 10; // Padding inside a actor
 var SIGNAL_MARGIN  = 5; // Margin around a signal
 var SIGNAL_PADDING = 5; // Padding inside a signal
 
+var ACTIVATION_WIDTH = 10; // Width of activation line
+
 var NOTE_MARGIN   = 10; // Margin around a note
 var NOTE_PADDING  = 5; // Padding inside a note
 var NOTE_OVERLAP  = 15; // Overlap when using a "note over A,B"
@@ -900,7 +956,7 @@ function clamp(x, min, max) {
 }
 
 function wobble(x1, y1, x2, y2) {
-  assert(_.every([x1,x2,y1,y2], _.isFinite), 'x1,x2,y1,y2 must be numeric');
+  assert([x1,x2,y1,y2].every(_.isFinite), 'x1,x2,y1,y2 must be numeric');
 
   // Wobble no more than 1/25 of the line length
   var factor = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) / 25;
@@ -1008,7 +1064,7 @@ _.extend(BaseTheme.prototype, {
       diagram.height += title.height;
     }
 
-    _.each(actors, _.bind(function(a) {
+    actors.forEach(function(a) {
       var bb = this.textBBox(a.name, font);
       a.textBB = bb;
 
@@ -1019,7 +1075,7 @@ _.extend(BaseTheme.prototype, {
       a.distances = [];
       a.paddingRight = 0;
       this.actorsHeight_ = Math.max(a.height, this.actorsHeight_);
-    }, this));
+    }.bind(this));
 
     function actorEnsureDistance(a, b, d) {
       assert(a < b, 'a must be less than or equal to b');
@@ -1038,16 +1094,22 @@ _.extend(BaseTheme.prototype, {
       }
     }
 
-    _.each(signals, _.bind(function(s) {
+    signals.forEach(function(s) {
       // Indexes of the left and right actors involved
       var a;
       var b;
 
-      var bb = this.textBBox(s.message, font);
+      if (s.message) {
+          var bb = this.textBBox(s.message, font);
 
-      s.textBB = bb;
-      s.width   = bb.width;
-      s.height  = bb.height;
+          s.textBB = bb;
+          s.width   = bb.width;
+          s.height  = bb.height;
+      } else {
+          s.textBB = null;
+          s.width = 0;
+          s.height = 0;
+      }
 
       var extraWidth = 0;
 
@@ -1065,7 +1127,23 @@ _.extend(BaseTheme.prototype, {
           a = Math.min(s.actorA.index, s.actorB.index);
           b = Math.max(s.actorA.index, s.actorB.index);
         }
-
+      } else if (s.type == 'Activation') {
+        s.actor.activeOffsets.push({
+            from: this.signalsHeight_ + this.actorsHeight_ - SIGNAL_MARGIN,
+            to: null
+        });
+        a = s.actor.index;
+        b = a + 1;
+      } else if (s.type == 'Deactivation') {
+        s.actor.activeOffsets.reverse().some(function(oOffset) {
+            if (oOffset.to === null) {
+                oOffset.to = this.signalsHeight_ + this.actorsHeight_ - SIGNAL_MARGIN;
+                return true;
+            }
+            return false;
+        }.bind(this));
+        a = s.actor.index;
+        b = a + 1;
       } else if (s.type == 'Note') {
         s.width  += (NOTE_MARGIN + NOTE_PADDING) * 2;
         s.height += (NOTE_MARGIN + NOTE_PADDING) * 2;
@@ -1102,24 +1180,25 @@ _.extend(BaseTheme.prototype, {
 
       actorEnsureDistance(a, b, s.width + extraWidth);
       this.signalsHeight_ += s.height;
-    }, this));
+    }.bind(this));
 
     // Re-jig the positions
     var actorsX = 0;
-    _.each(actors, function(a) {
+    actors.forEach(function(a) {
       a.x = Math.max(actorsX, a.x);
 
       // TODO This only works if we loop in sequence, 0, 1, 2, etc
-      _.each(a.distances, function(distance, b) {
+      a.distances.forEach(function(distance, iIdx) {
         // lodash (and possibly others) do not like sparse arrays
         // so sometimes they return undefined
         if (typeof distance == 'undefined') {
           return;
         }
 
-        b = actors[b];
-        distance = Math.max(distance, a.width / 2, b.width / 2);
-        b.x = Math.max(b.x, a.x + a.width / 2 + distance - b.width / 2);
+        var b = actors[iIdx];
+        var dist = Math.max(distance, a.width / 2, b.width / 2);
+
+        b.x = Math.max(b.x, a.x + a.width / 2 + dist - b.width / 2);
       });
 
       actorsX = a.x + a.width + a.paddingRight;
@@ -1130,6 +1209,17 @@ _.extend(BaseTheme.prototype, {
     // TODO Refactor a little
     diagram.width  += 2 * DIAGRAM_MARGIN;
     diagram.height += 2 * DIAGRAM_MARGIN + 2 * this.actorsHeight_ + this.signalsHeight_;
+
+    // close all activation offsets that are still open
+    actors.forEach(function(a) {
+        a.activeOffsets
+            .filter(function(oOffset) {
+                return oOffset.to === null;
+            })
+            .forEach(function(oOffset) {
+                oOffset.to = this.signalsHeight_ + SIGNAL_MARGIN + this.actorsHeight_;
+            }.bind(this));
+    }.bind(this));
 
     return this;
   },
@@ -1147,12 +1237,14 @@ _.extend(BaseTheme.prototype, {
 
   drawActors: function(offsetY) {
     var y = offsetY;
-    _.each(this.diagram.actors, _.bind(function(a) {
+    this.diagram.actors.forEach(function(a) {
       // Top box
       this.drawActor(a, y, this.actorsHeight_);
 
       // Bottom box
-      this.drawActor(a, y + this.actorsHeight_ + this.signalsHeight_, this.actorsHeight_);
+      if (this.diagram.hasFootbox) {
+          this.drawActor(a, y + this.actorsHeight_ + this.signalsHeight_, this.actorsHeight_);
+      }
 
       // Veritical line
       var aX = getCenterX(a);
@@ -1160,18 +1252,30 @@ _.extend(BaseTheme.prototype, {
        aX, y + this.actorsHeight_ - ACTOR_MARGIN,
        aX, y + this.actorsHeight_ + ACTOR_MARGIN + this.signalsHeight_,
       LINETYPE.DASHED);
-    }, this));
+
+      // Activation
+      a.activeOffsets.forEach(function(oOffset) {
+          this.drawRect(
+            aX - ACTIVATION_WIDTH/2, /* x */
+            y + oOffset.from, /* y */
+            ACTIVATION_WIDTH, /* w */
+            oOffset.to - oOffset.from /* h */
+          );
+      }.bind(this));
+    }.bind(this));
   },
 
   drawActor: function(actor, offsetY, height) {
     actor.y      = offsetY;
     actor.height = height;
-    this.drawTextBox(actor, actor.name, ACTOR_MARGIN, ACTOR_PADDING, this.font_, ALIGN_CENTER);
+    this.drawTextBox(actor, actor.name, ACTOR_MARGIN, ACTOR_PADDING, this.font_, ALIGN_CENTER, false, {
+        textDecoration: 'underline'
+    });
   },
 
   drawSignals: function(offsetY) {
     var y = offsetY;
-    _.each(this.diagram.signals, _.bind(function(s) {
+    this.diagram.signals.forEach(function(s) {
       // TODO Add debug mode, that draws padding/margin box
       if (s.type == 'Signal') {
         if (s.isSelf()) {
@@ -1185,7 +1289,7 @@ _.extend(BaseTheme.prototype, {
       }
 
       y += s.height;
-    }, this));
+    }.bind(this));
   },
 
   drawSelfSignal: function(signal, offsetY) {
@@ -1197,10 +1301,19 @@ _.extend(BaseTheme.prototype, {
     var y1 = offsetY + SIGNAL_MARGIN + SIGNAL_PADDING;
     var y2 = y1 + signal.height - 2 * SIGNAL_MARGIN - SIGNAL_PADDING;
 
+    var signalOffsetXStart = 0;
+    var signalOffsetXEnd = 0;
+    if (this.isActorActiveAt(y1, signal.actorA)) {
+        signalOffsetXStart = ACTIVATION_WIDTH/2;
+    }
+    if (this.isActorActiveAt(y2, signal.actorB)) {
+        signalOffsetXEnd = ACTIVATION_WIDTH/2;
+    }
+
     // Draw three lines, the last one with a arrow
-    this.drawLine(aX, y1, aX + SELF_SIGNAL_WIDTH, y1, signal.linetype);
+    this.drawLine(aX + signalOffsetXStart, y1, aX + SELF_SIGNAL_WIDTH, y1, signal.linetype);
     this.drawLine(aX + SELF_SIGNAL_WIDTH, y1, aX + SELF_SIGNAL_WIDTH, y2, signal.linetype);
-    this.drawLine(aX + SELF_SIGNAL_WIDTH, y2, aX, y2, signal.linetype, signal.arrowtype);
+    this.drawLine(aX + SELF_SIGNAL_WIDTH, y2, aX + signalOffsetXEnd, y2, signal.linetype, signal.arrowtype);
 
     // Draw text
     var x = aX + SELF_SIGNAL_WIDTH + SIGNAL_PADDING;
@@ -1211,8 +1324,13 @@ _.extend(BaseTheme.prototype, {
 
     this.drawText(x, y, signal.message, this.font_, ALIGN_LEFT);
   },
-
+  isActorActiveAt: function(y, actor) {
+    return actor.activeOffsets.some(function(oOffset) {
+      return oOffset.from <= y && oOffset.to >= y;
+    });
+  },
   drawSignal: function(signal, offsetY) {
+
     var aX = getCenterX(signal.actorA);
     var bX = getCenterX(signal.actorB);
 
@@ -1227,7 +1345,21 @@ _.extend(BaseTheme.prototype, {
     // Padding above, between message and line
     // Margin below the line, between line and next signal
     y = offsetY + signal.height - SIGNAL_PADDING;
-    this.drawLine(aX, y, bX, y, signal.linetype, signal.arrowtype);
+
+    var signalOffsetXStart = 0;
+    var signalOffsetXEnd = 0;
+    if (this.isActorActiveAt(y, signal.actorA)) {
+        signalOffsetXStart = signal.actorA.index < signal.actorB.index
+            ? ACTIVATION_WIDTH/2
+            : -ACTIVATION_WIDTH/2;
+    }
+    if (this.isActorActiveAt(y, signal.actorB)) {
+        signalOffsetXEnd = signal.actorA.index < signal.actorB.index
+            ? -ACTIVATION_WIDTH/2
+            : ACTIVATION_WIDTH/2;
+    }
+
+    this.drawLine(aX + signalOffsetXStart, y, bX + signalOffsetXEnd, y, signal.linetype, signal.arrowtype);
   },
 
   drawNote: function(note, offsetY) {
@@ -1260,7 +1392,7 @@ _.extend(BaseTheme.prototype, {
   /**
    * Draw text surrounded by a box
    */
-  drawTextBox: function(box, text, margin, padding, font, align, bNoBorder) {
+  drawTextBox: function(box, text, margin, padding, font, align, bNoBorder, css) {
     var x = box.x + margin;
     var y = box.y + margin;
     var w = box.width  - 2 * margin;
@@ -1282,7 +1414,7 @@ _.extend(BaseTheme.prototype, {
       y += padding;
     }
 
-    return this.drawText(x, y, text, font, align);
+    return this.drawText(x, y, text, font, align, css);
   }
 });
 
@@ -1465,8 +1597,9 @@ if (typeof Snap != 'undefined') {
      * text (string) text to print
      * font (Object)
      * align (string) ALIGN_LEFT, ALIGN_CENTER, ALIGN_HORIZONTAL_CENTER or ALIGN_VERTICAL_CENTER
+     * css (Object) css properties
      */
-    drawText: function(x, y, text, font, align) {
+    drawText: function(x, y, text, font, align, css) {
       var t = this.createText(text, font);
       var bb = t.getBBox();
 
@@ -1480,7 +1613,7 @@ if (typeof Snap != 'undefined') {
       // Now move the text into place
       // `y - bb.y` because text(..) is positioned from the baseline, so this moves it down.
       t.attr({x: x - bb.x, y: y - bb.y});
-      t.selectAll('tspan').attr({x: x});
+      t.selectAll('tspan').attr(Object.assign({x: x}, css || {}));
 
       this.pushToStack(t);
       return t;
