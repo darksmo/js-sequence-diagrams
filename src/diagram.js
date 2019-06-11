@@ -79,6 +79,11 @@ Diagram.Activation = function(actor) {
   this.actor = actor;
 };
 
+Diagram.Deactivation = function(actor) {
+  this.type = 'Deactivation';
+  this.actor = actor;
+};
+
 Diagram.Note = function(actor, placement, message) {
   this.type      = 'Note';
   this.actor     = actor;

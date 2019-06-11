@@ -34,6 +34,29 @@ function assertSingleArrow(d, arrowtype, linetype, actorA, actorB, message) {
   equal(d.signals[0].linetype, linetype, 'Line type');
 }
 
+function assertSingleDeactivation(d, actors) {
+
+  equal(d.signals.length, 1, 'Correct deactivation count');
+
+  var deactivation = d.signals[0];
+  equal(deactivation.type, 'Deactivation', 'Correct signal type');
+
+  if (_.isArray(actors)) {
+    equal(_.isArray(d.actors), true, 'Correct actors array');
+    equal(d.actors.length, actors.length, 'Correct actors count');
+
+    equal(deactivation.actor.length, actors.length, 'Correct deactivation actors');
+    for (var i = 0; i < actors.length; i++) {
+      equal(d.actors[i].name, actors[i], 'Correct actor');
+      equal(deactivation.actor[i].name, actors[i], 'Correct deactivation actor');
+    }
+
+  } else {
+    equal(d.actors.length, 1, 'Correct actors count');
+    equal(deactivation.actor.name, actors, 'Correct deactivation actor');
+  }
+}
+
 function assertSingleActivation(d, actors) {
 
   equal(d.signals.length, 1, 'Correct activation count');
@@ -184,6 +207,11 @@ test('Activation', function() {
   // TODO: multiple actors at the same time
   // assertSingleActivation(Diagram.parse('activate A,B,C'), ['A', 'B', 'C']);
 });
+
+test('Deactivation', function() {
+  assertSingleDeactivation(Diagram.parse('deactivate A'), 'A');
+});
+
 
 test('Notes', function() {
   assertSingleNote(Diagram.parse('Note left of A: Message'), PLACEMENT.LEFTOF, 'A');

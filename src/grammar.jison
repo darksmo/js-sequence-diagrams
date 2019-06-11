@@ -24,6 +24,7 @@
 "over"            return 'over';
 "note"            return 'note';
 "activate"        return 'activate';
+"deactivate"      return 'deactivate';
 "title"           { this.begin('title'); return 'title'; }
 <title>[^\r\n]+   { this.popState(); return 'MESSAGE'; }
 ","               return ',';
@@ -66,7 +67,8 @@ statement
 	;
 
 activation_statement
-    : 'activate' actor { $$ = new Diagram.Activation($2); }
+    : 'deactivate' actor { $$ = new Diagram.Deactivation($2); }
+    | 'activate' actor { $$ = new Diagram.Activation($2); }
     ;
 
 note_statement

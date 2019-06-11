@@ -272,6 +272,16 @@ _.extend(BaseTheme.prototype, {
         });
         a = s.actor.index;
         b = a + 1;
+      } else if (s.type == 'Deactivation') {
+        s.actor.activeOffsets.reverse().some(function(oOffset) {
+            if (oOffset.to === null) {
+                oOffset.to = this.signalsHeight_ + this.actorsHeight_ - SIGNAL_MARGIN;
+                return true;
+            }
+            return false;
+        }.bind(this));
+        a = s.actor.index;
+        b = a + 1;
       } else if (s.type == 'Note') {
         s.width  += (NOTE_MARGIN + NOTE_PADDING) * 2;
         s.height += (NOTE_MARGIN + NOTE_PADDING) * 2;
@@ -425,10 +435,19 @@ _.extend(BaseTheme.prototype, {
     var y1 = offsetY + SIGNAL_MARGIN + SIGNAL_PADDING;
     var y2 = y1 + signal.height - 2 * SIGNAL_MARGIN - SIGNAL_PADDING;
 
+    var signalOffsetXStart = 0;
+    var signalOffsetXEnd = 0;
+    if (this.isActorActiveAt(y1, signal.actorA)) {
+        signalOffsetXStart = ACTIVATION_WIDTH/2;
+    }
+    if (this.isActorActiveAt(y2, signal.actorB)) {
+        signalOffsetXEnd = ACTIVATION_WIDTH/2;
+    }
+
     // Draw three lines, the last one with a arrow
-    this.drawLine(aX, y1, aX + SELF_SIGNAL_WIDTH, y1, signal.linetype);
+    this.drawLine(aX + signalOffsetXStart, y1, aX + SELF_SIGNAL_WIDTH, y1, signal.linetype);
     this.drawLine(aX + SELF_SIGNAL_WIDTH, y1, aX + SELF_SIGNAL_WIDTH, y2, signal.linetype);
-    this.drawLine(aX + SELF_SIGNAL_WIDTH, y2, aX, y2, signal.linetype, signal.arrowtype);
+    this.drawLine(aX + SELF_SIGNAL_WIDTH, y2, aX + signalOffsetXEnd, y2, signal.linetype, signal.arrowtype);
 
     // Draw text
     var x = aX + SELF_SIGNAL_WIDTH + SIGNAL_PADDING;
@@ -439,14 +458,12 @@ _.extend(BaseTheme.prototype, {
 
     this.drawText(x, y, signal.message, this.font_, ALIGN_LEFT);
   },
-
+  isActorActiveAt: function(y, actor) {
+    return actor.activeOffsets.some(function(oOffset) {
+      return oOffset.from <= y && oOffset.to >= y;
+    });
+  },
   drawSignal: function(signal, offsetY) {
-
-    function isActorActiveAt(y, actor) {
-        return actor.activeOffsets.some(function(oOffset) {
-            return oOffset.from <= y && oOffset.to >= y;
-        });
-    }
 
     var aX = getCenterX(signal.actorA);
     var bX = getCenterX(signal.actorB);
@@ -465,14 +482,18 @@ _.extend(BaseTheme.prototype, {
 
     var signalOffsetXStart = 0;
     var signalOffsetXEnd = 0;
-    if (isActorActiveAt.bind(this)(y, signal.actorA)) {
-        signalOffsetXStart = ACTIVATION_WIDTH/2;
+    if (this.isActorActiveAt(y, signal.actorA)) {
+        signalOffsetXStart = signal.actorA.index < signal.actorB.index
+            ? ACTIVATION_WIDTH/2
+            : -ACTIVATION_WIDTH/2;
     }
-    if (isActorActiveAt.bind(this)(y, signal.actorB)) {
-        signalOffsetXEnd = ACTIVATION_WIDTH/2;
+    if (this.isActorActiveAt(y, signal.actorB)) {
+        signalOffsetXEnd = signal.actorA.index < signal.actorB.index
+            ? -ACTIVATION_WIDTH/2
+            : ACTIVATION_WIDTH/2;
     }
 
-    this.drawLine(aX + signalOffsetXStart, y, bX - signalOffsetXEnd, y, signal.linetype, signal.arrowtype);
+    this.drawLine(aX + signalOffsetXStart, y, bX + signalOffsetXEnd, y, signal.linetype, signal.arrowtype);
   },
 
   drawNote: function(note, offsetY) {
