@@ -9,6 +9,7 @@ function Diagram() {
   this.title   = undefined;
   this.actors  = [];
   this.signals = [];
+  this.hasFootbox = true;
 }
 /*
  * Return an existing actor with this alias, or creates a new one with alias and name.
@@ -48,6 +49,9 @@ Diagram.prototype.getActorWithAlias = function(input) {
 
 Diagram.prototype.setTitle = function(title) {
   this.title = title;
+};
+Diagram.prototype.setFootbox = function(hasFootbox) {
+  this.hasFootbox = false;
 };
 
 Diagram.prototype.addSignal = function(signal) {

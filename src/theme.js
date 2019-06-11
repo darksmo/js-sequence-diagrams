@@ -355,7 +355,7 @@ _.extend(BaseTheme.prototype, {
                 return oOffset.to === null;
             })
             .forEach(function(oOffset) {
-                oOffset.to = this.signalsHeight_ + this.actorsHeight_ - ACTOR_MARGIN + DIAGRAM_MARGIN;
+                oOffset.to = this.signalsHeight_ + SIGNAL_MARGIN + this.actorsHeight_;
             }.bind(this));
     }.bind(this));
 
@@ -380,7 +380,9 @@ _.extend(BaseTheme.prototype, {
       this.drawActor(a, y, this.actorsHeight_);
 
       // Bottom box
-      this.drawActor(a, y + this.actorsHeight_ + this.signalsHeight_, this.actorsHeight_);
+      if (this.diagram.hasFootbox) {
+          this.drawActor(a, y + this.actorsHeight_ + this.signalsHeight_, this.actorsHeight_);
+      }
 
       // Veritical line
       var aX = getCenterX(a);
@@ -404,7 +406,9 @@ _.extend(BaseTheme.prototype, {
   drawActor: function(actor, offsetY, height) {
     actor.y      = offsetY;
     actor.height = height;
-    this.drawTextBox(actor, actor.name, ACTOR_MARGIN, ACTOR_PADDING, this.font_, ALIGN_CENTER);
+    this.drawTextBox(actor, actor.name, ACTOR_MARGIN, ACTOR_PADDING, this.font_, ALIGN_CENTER, false, {
+        textDecoration: 'underline'
+    });
   },
 
   drawSignals: function(offsetY) {
@@ -526,7 +530,7 @@ _.extend(BaseTheme.prototype, {
   /**
    * Draw text surrounded by a box
    */
-  drawTextBox: function(box, text, margin, padding, font, align, bNoBorder) {
+  drawTextBox: function(box, text, margin, padding, font, align, bNoBorder, css) {
     var x = box.x + margin;
     var y = box.y + margin;
     var w = box.width  - 2 * margin;
@@ -548,6 +552,6 @@ _.extend(BaseTheme.prototype, {
       y += padding;
     }
 
-    return this.drawText(x, y, text, font, align);
+    return this.drawText(x, y, text, font, align, css);
   }
 });

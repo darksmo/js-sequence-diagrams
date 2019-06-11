@@ -19,6 +19,7 @@
 \s+               /* skip whitespace */
 \#[^\r\n]*        /* skip comments */
 "participant"     return 'participant';
+"hide footbox"    return 'hide_footbox';
 "left of"         return 'left_of';
 "right of"        return 'right_of';
 "over"            return 'over';
@@ -60,6 +61,7 @@ line
 
 statement
 	: 'participant' actor_alias { $2; }
+    | 'hide_footbox'     { yy.parser.yy.setFootbox(false); }
 	| signal               { yy.parser.yy.addSignal($1); }
 	| note_statement       { yy.parser.yy.addSignal($1); }
 	| activation_statement { yy.parser.yy.addSignal($1); }
