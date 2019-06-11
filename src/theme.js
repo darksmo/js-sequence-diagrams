@@ -92,7 +92,7 @@ function clamp(x, min, max) {
 }
 
 function wobble(x1, y1, x2, y2) {
-  assert(_.every([x1,x2,y1,y2], _.isFinite), 'x1,x2,y1,y2 must be numeric');
+  assert([x1,x2,y1,y2].every(_.isFinite), 'x1,x2,y1,y2 must be numeric');
 
   // Wobble no more than 1/25 of the line length
   var factor = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) / 25;
@@ -200,7 +200,7 @@ _.extend(BaseTheme.prototype, {
       diagram.height += title.height;
     }
 
-    _.each(actors, _.bind(function(a) {
+    actors.forEach(function(a) {
       var bb = this.textBBox(a.name, font);
       a.textBB = bb;
 
@@ -211,7 +211,7 @@ _.extend(BaseTheme.prototype, {
       a.distances = [];
       a.paddingRight = 0;
       this.actorsHeight_ = Math.max(a.height, this.actorsHeight_);
-    }, this));
+    }.bind(this));
 
     function actorEnsureDistance(a, b, d) {
       assert(a < b, 'a must be less than or equal to b');
@@ -230,7 +230,7 @@ _.extend(BaseTheme.prototype, {
       }
     }
 
-    _.each(signals, _.bind(function(s) {
+    signals.forEach(function(s) {
       // Indexes of the left and right actors involved
       var a;
       var b;
@@ -294,15 +294,15 @@ _.extend(BaseTheme.prototype, {
 
       actorEnsureDistance(a, b, s.width + extraWidth);
       this.signalsHeight_ += s.height;
-    }, this));
+    }.bind(this));
 
     // Re-jig the positions
     var actorsX = 0;
-    _.each(actors, function(a) {
+    actors.forEach(function(a) {
       a.x = Math.max(actorsX, a.x);
 
       // TODO This only works if we loop in sequence, 0, 1, 2, etc
-      _.each(a.distances, function(distance, b) {
+      _each(a.distances, function(distance, b) {
         // lodash (and possibly others) do not like sparse arrays
         // so sometimes they return undefined
         if (typeof distance == 'undefined') {
@@ -339,7 +339,7 @@ _.extend(BaseTheme.prototype, {
 
   drawActors: function(offsetY) {
     var y = offsetY;
-    _.each(this.diagram.actors, _.bind(function(a) {
+    this.diagram.actors.forEach(function(a) {
       // Top box
       this.drawActor(a, y, this.actorsHeight_);
 
@@ -352,7 +352,7 @@ _.extend(BaseTheme.prototype, {
        aX, y + this.actorsHeight_ - ACTOR_MARGIN,
        aX, y + this.actorsHeight_ + ACTOR_MARGIN + this.signalsHeight_,
       LINETYPE.DASHED);
-    }, this));
+    }.bind(this));
   },
 
   drawActor: function(actor, offsetY, height) {
@@ -363,7 +363,7 @@ _.extend(BaseTheme.prototype, {
 
   drawSignals: function(offsetY) {
     var y = offsetY;
-    _.each(this.diagram.signals, _.bind(function(s) {
+    this.diagram.signals.forEach(function(s) {
       // TODO Add debug mode, that draws padding/margin box
       if (s.type == 'Signal') {
         if (s.isSelf()) {
@@ -377,7 +377,7 @@ _.extend(BaseTheme.prototype, {
       }
 
       y += s.height;
-    }, this));
+    }.bind(this));
   },
 
   drawSelfSignal: function(signal, offsetY) {
